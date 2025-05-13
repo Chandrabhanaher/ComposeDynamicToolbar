@@ -95,7 +95,7 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
             Text(text = "Catalyst", style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.onBackground
             ))
             Spacer(modifier = Modifier.width(2.dp))
             Switch(
@@ -123,7 +123,7 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
             Text(text = "Distometer", style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.onBackground
             ))
             Spacer(modifier = Modifier.width(2.dp))
             Switch(
