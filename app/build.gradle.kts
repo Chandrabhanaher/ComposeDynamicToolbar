@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.chandra.composedynamictoolbar"
-        minSdk = 21
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -56,4 +56,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle)
+
+    // ArcGIS Maps for Kotlin - SDK dependency
+    implementation(libs.arcgis.maps.kotlin)
+    // Toolkit dependencies
+    implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
+    implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
+    implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
 }
