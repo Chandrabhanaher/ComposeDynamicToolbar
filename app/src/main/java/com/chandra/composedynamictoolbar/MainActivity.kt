@@ -2,15 +2,22 @@ package com.chandra.composedynamictoolbar
 
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,7 +42,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +66,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         ArcGISEnvironment.apiKey = ApiKey.create("AAPT85fOqywZsicJupSmVSCGrnTWuY3dxr_XClY4tlFDwwxRM74D716knpzP8IUrh63zAdb_HT6MUm9lzMNBB8y2XLf6Rf0zq5RE9yFw9z_WheLtqUrMmCLBFA172915PwNPfvLiUJwxWtyIfdOzU39nfOfegG_gzCuJtdPdGwSx7t-h2Uy9obspqT4MwHsrux62Hr2IkTrrxTNigMPgH8YBUSpG9jAe8GP3S3PdA2r4lqU.AT2_2826mlK2")
-
+        ArcGISEnvironment.applicationContext = applicationContext
         setContent {
             HomeScreen()
         }
@@ -200,8 +209,6 @@ fun Greeting(paddingValues: PaddingValues) {
     val viewModel = MainViewModel(application = Application())
     var expanded by remember { mutableStateOf(false) }
     RequestPermissions(context){}
-    ArcGISEnvironment.applicationContext = context.applicationContext
-
     ArcGisMapView(paddingValues, context,viewModel)
     ChangeBaseMap(paddingValues, viewModel)
 }

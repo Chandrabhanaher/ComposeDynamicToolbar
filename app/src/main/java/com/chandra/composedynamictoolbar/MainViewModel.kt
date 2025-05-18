@@ -1,25 +1,28 @@
 package com.chandra.composedynamictoolbar
 
 import android.app.Application
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.arcgismaps.geometry.Point
-import com.arcgismaps.location.Location
-import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel(application: Application):AndroidViewModel(application){
 
     private val _mapState = MutableStateFlow(ArcGISMap(BasemapStyle.ArcGISTopographicBase))
     val mapState: StateFlow<ArcGISMap?> = _mapState
+
+
+    private val _selectedBasemapStyle = MutableStateFlow<BasemapStyle>(BasemapStyle.ArcGISTopographic)
+    val selectedBasemapStyle: StateFlow<BasemapStyle> = _selectedBasemapStyle
+
+    fun updateBasemapStyle(style: BasemapStyle) {
+        _selectedBasemapStyle.value = style
+    }
 
     fun changeBasemap(style: BasemapStyle) {
         _mapState.value = ArcGISMap(style)
@@ -46,5 +49,12 @@ class MainViewModel(application: Application):AndroidViewModel(application){
 
     fun getMyLocation(i: Int) {
         _getLocation.value = i
+    }
+
+    private val _kml = MutableStateFlow<Uri?>(null)
+    val kmlPath get() = _kml.asStateFlow()
+
+    fun kmlPath(path: Uri?) {
+        _kml.value = path!!
     }
 }

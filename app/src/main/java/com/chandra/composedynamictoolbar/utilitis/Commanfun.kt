@@ -3,6 +3,8 @@ package com.chandra.composedynamictoolbar.utilitis
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,10 +15,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -42,18 +44,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.arcgismaps.location.LocationDisplayAutoPanMode
 import com.arcgismaps.mapping.BasemapStyle
-import com.arcgismaps.toolkit.geoviewcompose.rememberLocationDisplay
+import com.arcgismaps.mapping.layers.KmlLayer
+import com.arcgismaps.mapping.view.MapView
 import com.chandra.composedynamictoolbar.MainViewModel
 import com.chandra.composedynamictoolbar.R
+import java.io.File
+import java.io.FileOutputStream
 
 
 @Composable
 fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
     val isCatalyst by viewModel.catalyst.observeAsState(false)
     val isDistometer by viewModel.distometer.observeAsState(false)
-    Column(modifier = Modifier.fillMaxWidth().padding(paddingValues),
+    Column(modifier = Modifier.wrapContentSize().padding(paddingValues),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Center) {
 
@@ -160,6 +164,7 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
 }
 
 
+
 @Composable
 fun RequestPermissions(context: Context, onPermissionsGranted: ()-> Unit) {
     val locationPermissionRequest = rememberLauncherForActivityResult(
@@ -176,7 +181,7 @@ fun RequestPermissions(context: Context, onPermissionsGranted: ()-> Unit) {
         locationPermissionRequest.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             )
         )
     }
@@ -200,3 +205,56 @@ fun showError(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
 
+fun removeLayerFromMap(context: Context,mapView: MapView, kmlLayers: MutableList<KmlLayer>, kmlPath: Uri?) {
+    val path  = copyKmlUriToTempFile(context, kmlPath!!)
+    val layers = mapView.map!!.operationalLayers
+    val layerToRemove = kmlLayers.find { it.dataset.uri == path }
+
+    layerToRemove?.let {
+        layers.remove(it)
+        kmlLayers.remove(it)
+        Log.d("KML", "Layer removed from map: $path")
+    }
+}
+/*fun removeLayerFromMap(path: String, kmlLayers: MutableList<KmlLayer>) {
+
+    val layers = mapView.map.operationalLayers
+    val layerToRemove = kmlLayers.find { it.dataset?.path == path }
+
+    layerToRemove?.let {
+        layers.remove(it)
+        kmlLayers.remove(it)
+        Log.d("KML", "Layer removed from map: $path")
+    }
+}*/
+
+fun copyKmlUriToTempFile(context: Context, kmlUri: Uri): String {
+    val tempFile = File(context.cacheDir, "temp.kml")
+    context.contentResolver.openInputStream(kmlUri)?.use { input ->
+        FileOutputStream(tempFile).use { output ->
+            input.copyTo(output)
+        }
+    }
+    return tempFile.absolutePath
+}
+
+/*
+fun loadAndZoomKml(path: String, mapView: MapView?, kmlLayers: MutableList<KmlLayer>) {
+    if (mapView == null) return
+    val kmlDataset = KmlDataset(path, PathType.Absolute)
+    val kmlLayer = KmlLayer(kmlDataset)
+    mapView.map.operationalLayers.clear() // Clear previous layers
+    mapView.map.operationalLayers.add(kmlLayer)
+    kmlLayers.add(kmlLayer) // Add the new KML layer to the list
+
+    CoroutineScope(Dispatchers.Main).launch {
+        val result = kmlLayer.load()
+        result.onSuccess {
+            kmlLayer.fullExtent?.let { extent ->
+                mapView.setViewpointGeometry(extent, 50.0)
+            }
+        }.onFailure {
+            Log.e("KML", "Failed to load: ${it.message}")
+        }
+    }
+}*/
