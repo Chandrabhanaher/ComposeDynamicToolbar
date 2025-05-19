@@ -168,10 +168,11 @@ fun ArcGISMapView(mapView: MapView, modifier: Modifier, viewModel: MainViewModel
                     when(it){
                         LoadStatus.Loaded->{
                             val extent = kmlLayer.fullExtent
+                            Log.e("MY_MAP", "Kml layer name ${kmlLayer.name}")
                             kmlLayers.add(kmlLayer)
                             if (extent != null){
                                 val name = kmlDataset.rootNodes.firstOrNull()?.name
-                                Log.e("MY_MAP", "Kml layer name $name")
+                                Log.e("MY_MAP", "Kml km Data  name $name")
                                 mapView.setViewpointGeometry(extent, 50.0)
                             }
                         }

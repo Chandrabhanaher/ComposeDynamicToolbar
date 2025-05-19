@@ -1,9 +1,11 @@
 package com.chandra.composedynamictoolbar.utilitis
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -57,9 +59,13 @@ import java.io.FileOutputStream
 fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
     val isCatalyst by viewModel.catalyst.observeAsState(false)
     val isDistometer by viewModel.distometer.observeAsState(false)
-    Column(modifier = Modifier.wrapContentSize().padding(paddingValues),
+    Column(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(paddingValues),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.Center) {
+        verticalArrangement = Arrangement.Center
+    ) {
 
         val basemapOptions = listOf(
             "Topographic" to BasemapStyle.ArcGISTopographicBase,
@@ -70,13 +76,16 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
         var expanded by remember { mutableStateOf(false) }
         // Dropdown to change basemap
 
-        Box(modifier = Modifier.padding(top=10.dp, end = 8.dp)) {
+        Box(modifier = Modifier.padding(top = 10.dp, end = 8.dp)) {
             IconButton(onClick = {
                 expanded = !expanded
-            }){
-                Icon(painter = painterResource(R.drawable.ic_layers), contentDescription = "Select Layer",
+            }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_layers),
+                    contentDescription = "Select Layer",
                     tint = Color.Unspecified,
-                    modifier = Modifier.size(25.dp))
+                    modifier = Modifier.size(25.dp)
+                )
             }
             DropdownMenu(
                 expanded = expanded,
@@ -94,13 +103,17 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
                 }
             }
         }
-        Row(modifier = Modifier.padding(end = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Catalyst", style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onBackground
-            ))
+        Row(
+            modifier = Modifier.padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Catalyst", style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            )
             Spacer(modifier = Modifier.width(2.dp))
             Switch(
                 modifier = Modifier.scale(0.7f),
@@ -113,27 +126,31 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
                     uncheckedTrackColor = Color.Red.copy(alpha = 0.5f),
                 ),
                 thumbContent = {
-                    if (isCatalyst){
+                    if (isCatalyst) {
                         Text("ON", style = TextStyle(fontSize = 10.sp))
-                    }else{
-                        Text("OFF",style = TextStyle(fontSize = 10.sp))
+                    } else {
+                        Text("OFF", style = TextStyle(fontSize = 10.sp))
                     }
                 }
             )
         }
 
-        Row(modifier = Modifier.padding(end = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Distometer", style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.onBackground
-            ))
+        Row(
+            modifier = Modifier.padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Distometer", style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            )
             Spacer(modifier = Modifier.width(2.dp))
             Switch(
                 modifier = Modifier.scale(0.7f),
                 checked = isDistometer,
-                onCheckedChange = { viewModel.distometerSwitch()},
+                onCheckedChange = { viewModel.distometerSwitch() },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.Blue,
                     checkedTrackColor = Color.Blue.copy(alpha = 0.5f),
@@ -141,10 +158,10 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
                     uncheckedTrackColor = Color.Red.copy(alpha = 0.5f),
                 ),
                 thumbContent = {
-                    if (isDistometer){
+                    if (isDistometer) {
                         Text("ON", style = TextStyle(fontSize = 10.sp))
-                    }else{
-                        Text("OFF",style = TextStyle(fontSize = 10.sp))
+                    } else {
+                        Text("OFF", style = TextStyle(fontSize = 10.sp))
                     }
                 }
             )
@@ -156,7 +173,9 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
                 painter = painterResource(R.drawable.ic_my_location),
                 contentDescription = "My Location",
                 tint = Color.Unspecified,
-                modifier = Modifier.size(30.dp).padding(end = 8.dp)
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(end = 8.dp)
             )
         }
 
@@ -164,9 +183,8 @@ fun ChangeBaseMap(paddingValues: PaddingValues, viewModel: MainViewModel) {
 }
 
 
-
 @Composable
-fun RequestPermissions(context: Context, onPermissionsGranted: ()-> Unit) {
+fun RequestPermissions(context: Context, onPermissionsGranted: () -> Unit) {
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -205,8 +223,13 @@ fun showError(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
 
-fun removeLayerFromMap(context: Context,mapView: MapView, kmlLayers: MutableList<KmlLayer>, kmlPath: Uri?) {
-    val path  = copyKmlUriToTempFile(context, kmlPath!!)
+fun removeLayerFromMap(
+    context: Context,
+    mapView: MapView,
+    kmlLayers: MutableList<KmlLayer>,
+    kmlPath: Uri?
+) {
+    val path = copyKmlUriToTempFile(context, kmlPath!!)
     val layers = mapView.map!!.operationalLayers
     val layerToRemove = kmlLayers.find { it.dataset.uri == path }
 
@@ -228,8 +251,21 @@ fun removeLayerFromMap(context: Context,mapView: MapView, kmlLayers: MutableList
     }
 }*/
 
+@SuppressLint("Range")
 fun copyKmlUriToTempFile(context: Context, kmlUri: Uri): String {
-    val tempFile = File(context.cacheDir, "temp.kml")
+    var name: String? = null
+    if (kmlUri.scheme == "content") {
+        val cursor = context.contentResolver.query(kmlUri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+    } else if (kmlUri.scheme == "file") {
+        name = File(kmlUri.path!!).name
+    }
+    Log.d("MY_MAP", "File  name = $name")
+    val tempFile = File(context.cacheDir, name)
     context.contentResolver.openInputStream(kmlUri)?.use { input ->
         FileOutputStream(tempFile).use { output ->
             input.copyTo(output)
